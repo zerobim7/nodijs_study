@@ -7,3 +7,23 @@ router.get('/', function(req, res, next) {
 });
 
 module.exports = router;
+
+
+var mysql = require('mysql');
+var Connect = mysql.createConnection({
+  host : 'localhost',
+user : '< MySQL username >',
+password : '< MySQ: password >',
+port : < port >,
+database : 'my_db'
+});
+
+connection.connect();
+
+connection.query('SELECT * from Persons', function(err, rows, fields) {
+  if(!arr){
+    console.log('The solution is : ', rows);
+  } else {
+    console.log();
+  }
+})
