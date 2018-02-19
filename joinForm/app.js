@@ -72,6 +72,8 @@ app.get('/getCookie', function(req, res){
     console.log(req.cookie.loginCookie);
 });
 
+
+
 app.listen(7777.function()){
     console.log("server on 7777");
 }
