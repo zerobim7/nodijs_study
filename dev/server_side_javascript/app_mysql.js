@@ -9,50 +9,122 @@ app.locals.pretty = true;
 app.use(bodyParser.urlencoded({extended:false}));
 
 
-
-app.get('/topic/new', function(req, res){
-  fs.readdir('data', function(err, files){
+app.get('/topic/add', function(req, res){
+  var sql = 'SELECT id, title FROM topic';
+  conn.query(sql, function(err, topics, fields){
     if(err){
       console.log(err);
       res.status(500).send('server error');
     }
-    res.render('new', {topics:files});
+      res.render('add', {topics:topics});
   });
+});
+
+
+app.post('/topic/add', function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var sql = 'INSERT INTO topic(title, description, author) VALUES (?, ?, ?)';
+  conn.query(sql, [title, description, author], function(err, result, fields){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.redirect('/topic/'+result.insertId);
+    }
+  });
+});
+
+app.post(['/topic/:id/edit'], function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var id = req.params.id;
+  var sql = 'UPDATE topic SET title = ?, description = ?, author = ? WHERE id = ?';
+  conn.query(sql, [title, description, author, id],function(err, rows, fields){
+      if(err){
+        console.log(err);
+        res.status(500).send('server error');
+      } else {
+        res.redirect('/topic/'+ id);
+      }
+  });
+});
+
+
+
+app.get(['/topic/:id/edit'], function(req, res){
+
+  var sql = 'SELECT id, title FROM topic';
+  conn.query(sql, function(err, topics, fields){
+    var id = req.params.id;
+    if(id){
+      var sql = 'SELECT * FROM topic WHERE id = ?';
+      conn.query(sql, [id], function(err, topic, fields){
+        if(err){
+          console.log(err);
+          res.status(500).send('server error');
+        } else {
+          res.render('edit', {topics:topics, topic:topic[0]});
+        }
+      });
+    } else {
+      console.log('There is no id.');
+      res.render('view', {topics:topics});
+    }
+  });
+
+});
+
+
+app.get(['/topic/:id/del'], function(req, res){
+  var sql = 'DELETE FROM topic WHERE id = ?';
+  var sql2 = 'SELECT id, title FROM topic';
+  var id = req.params.id;
+
+
+    conn.query(sql, [id],function(err, rows, fields){
+      if(err){
+        console.log(err);
+        res.status(500).send('server error');
+      } else {
+        if(rows.length === 0 ){
+          console.log(err);
+          res.status(500).send('server error');
+        } else {
+
+          conn.query(sql2, function(err, topics, fields){
+            res.render('view', {topics:topics});
+          });
+
+        }
+      }
+    });
+
+
 });
 
 
 
 app.get(['/topic', '/topic/:id'], function(req, res){
 
-  /*
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
-      res.status(500).send('server error');
-    }
-
-    var id = req.params.id;
-
-    if(id){
-      fs.readFile('data/'+id, 'utf8', function(err, data){
-        if(err){
-          console.log(err);
-          res.status(500).send('Internal Server Error');
-        }
-          res.render('view', {topics:files, title:id, description:data});
-      });
-    } else {
-      res.render('view', {topics:files, title:'welcome', description:'hello'});
-    }
-
-  });
-  */
-
   var sql = 'SELECT id, title FROM topic';
   conn.query(sql, function(err, topics, fields){
+    var id = req.params.id;
+    if(id){
+      var sql = 'SELECT * FROM topic WHERE id = ?';
+      conn.query(sql, [id], function(err, topic, fields){
+        if(err){
+          console.log(err);
+        } else {
+          res.render('view', {topics:topics, topic:topic[0]});
+        }
+      });
+    } else {
     res.render('view', {topics:topics});
-  })
-
+    }
+  });
 
 });
 
@@ -92,6 +164,8 @@ app.get('/topic/:id', function(req, res){
   });
 });
 */
+
+
 
 app.listen(3000, function(){
     console.log('Connected, 3000 port');

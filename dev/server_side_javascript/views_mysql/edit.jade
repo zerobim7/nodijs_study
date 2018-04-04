@@ -10,13 +10,16 @@ html
         li
           a(href='/topic/'+topic.id)= topic.title
     article
-    if topic
-      h2= topic.title
-      = topic.description
-      div= 'by '+topic.author
-    else
-      h2 welcome
-      | this is server side javascript tutorial
+      form(action='/topic/'+ topic.id +'/edit' method = 'post')
+        p
+          input(type='text' name='title' placeholder='title' value=topic.title)
+        p
+          textarea(name='description'  placeholder='description')
+            =topic.description
+        p
+          input(type='text' name='author' placeholder='author' value=topic.author)
+        p
+          input(type='submit')
 
     ul
       li
