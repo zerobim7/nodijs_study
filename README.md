@@ -1,1 +1,1 @@
-# nodijs_study
+# nodejs_study
