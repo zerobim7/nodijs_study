@@ -160,7 +160,7 @@ module.exports = (app, fs) => {
 
         //CHECK REQ VALIDITY
         if(!req.body["password"] || !req.body["name"]) {
-            result["sucess"] = 0;
+            result["success"] = 0;
             result["error"] = "invalid request";
             res.json(result);
             return;
